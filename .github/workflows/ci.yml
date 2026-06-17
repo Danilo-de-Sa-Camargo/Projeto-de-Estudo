@@ -37,7 +37,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: build da imagem docker
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/api-simples:${{ github.sha }} .
+        run: docker build -t ghcr.io/danilo-de-sa-camargo/api-simples:${{ github.sha }} .
 
       - name: push da imagem pro registry
-        run: docker push ghcr.io/${{ github.repository_owner }}/api-simples:${{ github.sha }}
+        run: docker push ghcr.io/danilo-de-sa-camargo/api-simples:${{ github.sha }}
