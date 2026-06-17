@@ -1,0 +1,40 @@
+name: CI - build, test e publish no Artifactory
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: rodar testes
+        run: pytest
+
+  build-and-push-image:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: login no artifactory
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ARTIFACTORY_URL }}
+          username: ${{ secrets.ARTIFACTORY_USER }}
+          password: ${{ secrets.ARTIFACTORY_TOKEN }}
+
+      - name: build da imagem docker
+        run: docker build -t ${{ secrets.ARTIFACTORY_URL }}/meu-repo-docker/api-simples:${{ github.sha }} .
+
+      - name: push da imagem pro artifactory
+        run: docker push ${{ secrets.ARTIFACTORY_URL }}/meu-repo-docker/api-simples:${{ github.sha }}
